@@ -1,0 +1,8 @@
+[
+    {
+        "tipo": "zipone",
+        "directorio": "/opt/apache/files",
+        "reemplazar": false,
+        "nota": ""
+    }
+]
