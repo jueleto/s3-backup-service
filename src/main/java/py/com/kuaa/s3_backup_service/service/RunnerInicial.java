@@ -50,28 +50,10 @@ public class RunnerInicial implements CommandLineRunner {
 
 
         procesadorArchivo.leer(filePath);
+        procesadorArchivo.procesar();
 
 
         //servicioInicial.miMetodo(argumento1, argumento2);
-        // File file = new File("/Users/emilio/repo/awsSss/docs/archiiiivo.txt");
-        // File file = new File(filePath);
-
-        // if(!file.exists()){
-        //     System.out.println("ARCHIVO NO EXISTE : "+filePath);
-        //     System.exit(1);
-        // }
-
-        // String nombreArchivo = file.getName();
-
-        // try {
-        //     BucketObject bucketObject =  bucketOperation.uploadFile(nombreArchivo, directorioDestino , file);
-        //     System.out.println("ARCHIVO SUBIDO CON EXITO");
-        //     System.out.println("  objectKey: "+ bucketObject.getObjectKey());
-        //     System.out.println("");
-            
-        // } catch (Exception e) {
-        //     System.out.println("ERROR AL SUBIR ARCHIVO A AWS");
-        //     e.printStackTrace();
-        // }
+        
     }
 }

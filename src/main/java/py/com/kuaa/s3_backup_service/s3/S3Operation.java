@@ -26,6 +26,26 @@ public class S3Operation implements S3OperationInterface {
     }
 
     @Override
+    public BucketObject createDirectory(String directorioDestino) {
+        System.out.println("- Creando directorio: " + directorioDestino);
+        String objectKey = directorioDestino + "/";
+
+        if (objectKey.startsWith("/"))
+            objectKey = objectKey.substring(1);
+
+        boolean existeObjeto = checkIfObjectExists(objectKey);
+        System.out.println("- Existe en bucket?: " + existeObjeto);
+
+        System.out.println("");
+        s3Client.getClientAWS(accessKeyId, accessSecKey).putObject(
+                bucketName,
+                objectKey,
+                "");
+
+        return new BucketObject(objectKey, bucketName);
+    }
+
+    @Override
     public BucketObject uploadFile(String nombreArchivo, String directorioDestino, File archivo) {
         System.out.println("- Subiendo archivo: " + archivo.getAbsolutePath());
         String objectKey = directorioDestino + "/" + nombreArchivo;

@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 import py.com.kuaa.s3_backup_service.definition.BackupDefinitionDto;
+import py.com.kuaa.s3_backup_service.s3.BucketObject;
 import py.com.kuaa.s3_backup_service.s3.S3OperationInterface;
 
 @Slf4j
@@ -59,7 +60,7 @@ public class ProcesadorArchivoService {
             // System.out.println(definicion);
             // }
 
-            log.info(filePath +" leído exitosamente");
+            log.info(filePath + " leído exitosamente");
 
         } catch (Exception e) {
             String mensajeError = "Error al leer archivo de definiciones json [" + filePath + "] ";
@@ -69,48 +70,115 @@ public class ProcesadorArchivoService {
 
     }
 
-    public void subir() {
+    public void procesar() {
 
         for (BackupDefinitionDto definicionActual : this.definicionList) {
-            
-            recorrerFile(definicionActual.getDirectorio());
-            
+
+            recorrerFile(definicionActual);
+
         }
 
     }
 
-    private void recorrerFile(String directorio){
+    private void subirArchivoAws(String directorioDestino, boolean reemplazar, String filePath) {
 
-        // Define la ruta inicial del directorio a recorrer
-        Path startPath = Paths.get(directorio);
+        File file = new File(filePath);
+
+        if (!file.exists()) {
+            String mensajeError = "Archivo o directorio no existe [" + filePath + "] ";
+            log.error(mensajeError);
+            System.exit(1);
+        }
+        String nombreArchivo = "";
+
+        if (file.isFile()) {
+            nombreArchivo = file.getName();
+        }
 
         try {
-            Files.walkFileTree(startPath, EnumSet.noneOf(FileVisitOption.class), Integer.MAX_VALUE, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    // Procesa cada archivo encontrado
-                    System.out.println("Archivo: " + file);
-                    // Aquí puedes agregar código para leer y procesar el archivo si es necesario
-                    return FileVisitResult.CONTINUE;
-                }
+            BucketObject bucketObject = bucketOperation.uploadFile(
+                    nombreArchivo,
+                    directorioDestino+"/"+filePath,
+                    file);
+            log.info("Subido exitosamente: " + bucketObject.getObjectKey());
 
-                @Override
-                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                    // Procesa cada directorio encontrado
-                    System.out.println("Directorio: " + dir);
-                    return FileVisitResult.CONTINUE;
-                }
-
-                @Override
-                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-                    System.err.println("Error visitando el archivo: " + file + " (" + exc.getMessage() + ")");
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            String mensajeError = "Error al subir a aws [" + filePath + "] ";
+            log.error(mensajeError, e);
+            System.exit(1);
         }
     }
+
+    private void recorrerFile(BackupDefinitionDto definicion) {
+
+        File file = new File(definicion.getDirectorio());
+
+        if (!file.exists()) {
+            String mensajeError = "Archivo o directorio no existe [" + definicion.getDirectorio() + "] ";
+            log.error(mensajeError);
+            System.exit(1);
+        }
+
+
+        if (definicion.getTipo().equalsIgnoreCase("original")) {
+            if (file.isFile()) {
+                // subir directamente
+                subirArchivoAws(definicion.getDestino(), definicion.isReemplazar(),
+                        definicion.getDirectorio());
+            }
+
+            if (file.isDirectory()) {
+                subirDirectorioOriginal(definicion);
+            }
+
+        }
+
+    }
+
+    private void subirDirectorioOriginal(BackupDefinitionDto definicion){
+            // Define la ruta inicial del directorio a recorrer
+            Path startPath = Paths.get(definicion.getDirectorio());
+
+            try {
+                Files.walkFileTree(startPath, EnumSet.noneOf(FileVisitOption.class), Integer.MAX_VALUE,
+                        new SimpleFileVisitor<Path>() {
+                            @Override
+                            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                                // Procesa cada archivo encontrado
+                                System.out.println("subirDirectorioOriginal Archivo: " + file);
+                                // Aquí puedes agregar código para leer y procesar el archivo si es necesario
+                                subirArchivoAws(definicion.getDestino(), definicion.isReemplazar(),
+                                        file.toString());
+                                return FileVisitResult.CONTINUE;
+                            }
+    
+                            @Override
+                            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
+                                    throws IOException {
+                                // Procesa cada directorio encontrado
+                                System.out.println("subirDirectorioOriginal Directorio: " + dir);
+
+                                //crea el directorio
+                                bucketOperation
+                                        .createDirectory(definicion.getDestino() + "/" + definicion.getDirectorio());
+
+                                return FileVisitResult.CONTINUE;
+                            }
+    
+                            @Override
+                            public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                                System.err.println("subirDirectorioOriginal Error visitando el archivo: " + file + " (" + exc.getMessage() + ")");
+                                return FileVisitResult.CONTINUE;
+                            }
+                        });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        
+
+    }
+
 
 
 }
