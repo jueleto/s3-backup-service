@@ -4,8 +4,8 @@ import java.io.File;
 
 public interface S3OperationInterface {
 
-     public BucketObject createDirectory(String directorioDestino);
-     BucketObject uploadFile(String nombreArchivo, String directorioDestino, File archivo);
+     public BucketObject createDirectory(boolean reemplazar, String directorioDestino);
+     BucketObject uploadFile(boolean reemplazar, String nombreArchivo, String directorioDestino, File archivo);
      boolean checkIfObjectExists(String objectKey);
      
 }

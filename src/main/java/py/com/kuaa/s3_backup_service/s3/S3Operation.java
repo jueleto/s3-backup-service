@@ -22,46 +22,95 @@ public class S3Operation implements S3OperationInterface {
     S3Client s3Client;
 
     public S3Operation() {
-        s3Client= new S3Client();
+        s3Client = new S3Client();
     }
 
     @Override
-    public BucketObject createDirectory(String directorioDestino) {
-        System.out.println("- Creando directorio: " + directorioDestino);
+    public BucketObject createDirectory(boolean reemplazar, String directorioDestino) {
         String objectKey = directorioDestino + "/";
 
         if (objectKey.startsWith("/"))
             objectKey = objectKey.substring(1);
+        if (objectKey.startsWith("/"))
+            objectKey = objectKey.substring(1);
 
-        // boolean existeObjeto = checkIfObjectExists(objectKey);
-        // System.out.println("- Existe en bucket?: " + existeObjeto);
+        System.out.println("- Preparando directorio: " + objectKey);
+        boolean existeObjeto = checkIfObjectExists(objectKey);
+        System.out.println("  Existe en bucket '" + objectKey + "': " + (existeObjeto ? "Si" : "No"));
+
+        if (!existeObjeto) {
+            System.out.println("  Creando directorio: " + objectKey);
+            s3Client.getClientAWS(accessKeyId, accessSecKey).putObject(
+                    bucketName,
+                    objectKey,
+                    "");
+
+            System.out.println("  Creado exitosamente: " + objectKey);
+        } else {
+            if (reemplazar) {
+
+                System.out.println("  Reemplazando directorio: " + objectKey);
+                s3Client.getClientAWS(accessKeyId, accessSecKey).putObject(
+                        bucketName,
+                        objectKey,
+                        "");
+
+                System.out.println("  Reemplazado exitosamente: " + objectKey);
+
+            } else {
+
+                System.out.println("  Omitido: " + objectKey);
+
+            }
+
+        }
 
         System.out.println("");
-        s3Client.getClientAWS(accessKeyId, accessSecKey).putObject(
-                bucketName,
-                objectKey,
-                "");
 
         return new BucketObject(objectKey, bucketName);
     }
 
     @Override
-    public BucketObject uploadFile(String nombreArchivo, String directorioDestino, File archivo) {
-        System.out.println("- Subiendo archivo: " + archivo.getAbsolutePath());
+    public BucketObject uploadFile(boolean reemplazar, String nombreArchivo, String directorioDestino, File archivo) {
+        System.out.println("- Preparando archivo: " + archivo.getAbsolutePath());
         String objectKey = directorioDestino + "/" + nombreArchivo;
 
         if (objectKey.startsWith("/"))
             objectKey = objectKey.substring(1);
+        if (objectKey.startsWith("/"))
+            objectKey = objectKey.substring(1);
 
-        // boolean existeObjeto = checkIfObjectExists(objectKey);
-        // System.out.println("- Existe en bucket?: " + existeObjeto);
+        boolean existeObjeto = checkIfObjectExists(objectKey);
+        System.out.println("  Existe en bucket '" + objectKey + "': " + (existeObjeto ? "Si" : "No"));
+
+        if (!existeObjeto) {
+            System.out.println("  Subiendo archivo: " + objectKey);
+            s3Client.getClientAWS(accessKeyId, accessSecKey).putObject(
+                    bucketName,
+                    objectKey,
+                    archivo);
+
+            System.out.println("  Subido exitosamente: " + objectKey);
+        } else {
+            if (reemplazar) {
+
+                System.out.println("  Reemplazando archivo: " + objectKey);
+                s3Client.getClientAWS(accessKeyId, accessSecKey).putObject(
+                        bucketName,
+                        objectKey,
+                        archivo);
+
+                System.out.println("  Reemplazado exitosamente: " + objectKey);
+
+            } else {
+
+                System.out.println("  Omitido: " + objectKey);
+
+            }
+
+        }
 
         System.out.println("");
-        s3Client.getClientAWS(accessKeyId, accessSecKey).putObject(
-                bucketName,
-                objectKey,
-                archivo);
-
         return new BucketObject(objectKey, bucketName);
     }
 

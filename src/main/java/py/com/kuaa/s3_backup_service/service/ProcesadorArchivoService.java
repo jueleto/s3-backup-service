@@ -55,12 +55,11 @@ public class ProcesadorArchivoService {
             this.definicionList = objectMapper.readValue(file,
                     new TypeReference<List<BackupDefinitionDto>>() {
                     });
-            // Imprimir para probar
-            // for (BackupDefinitionDto definicion : definicionList) {
-            // System.out.println(definicion);
-            // }
+            
 
             log.info(filePath + " leído exitosamente");
+            this.verificar();
+            log.info(filePath + " verificado exitosamente");
 
         } catch (Exception e) {
             String mensajeError = "Error al leer archivo de definiciones json [" + filePath + "] ";
@@ -70,6 +69,35 @@ public class ProcesadorArchivoService {
 
     }
 
+    private void verificar() {
+
+        for (BackupDefinitionDto definicion : this.definicionList) {
+            // System.out.println(definicion);
+            // verificar tipo
+            if (!(",original,zip,zipone,").contains("," + definicion.getTipo() + ",")) {
+                String mensajeError = "Archivo de definición incorrecto, tipo [" + definicion.getTipo() + "] ";
+                log.error(mensajeError);
+                System.exit(1);
+            }
+
+            // verificar directorio
+            if (definicion.getDirectorio().endsWith("/")) {
+                String mensajeError = "Archivo de definición incorrecto, directorio no puede terminar en / [" + definicion.getDirectorio() + "] ";
+                log.error(mensajeError);
+                System.exit(1);
+            }
+
+            // verificar destino
+            if (definicion.getDestino().endsWith("/")) {
+                String mensajeError = "Archivo de definición incorrecto, destino no puede terminar en / [" + definicion.getDestino() + "] ";
+                log.error(mensajeError);
+                System.exit(1);
+            }
+        }
+
+    }
+
+    
     public void procesar() {
 
         for (BackupDefinitionDto definicionActual : this.definicionList) {
@@ -93,15 +121,17 @@ public class ProcesadorArchivoService {
 
         if (file.isFile()) {
             nombreArchivo = file.getName();
+            //extraemos el nombre del archivo del path
+            filePath = filePath.substring(0, filePath.length() - nombreArchivo.length()-1);
         }
 
         try {
             BucketObject bucketObject = bucketOperation.uploadFile(
+                    reemplazar,
                     nombreArchivo,
-                    directorioDestino+"/"+filePath,
+                    directorioDestino+filePath,
                     file);
-            log.info("Subido exitosamente: " + bucketObject.getObjectKey());
-
+            
         } catch (Exception e) {
             String mensajeError = "Error al subir a aws [" + filePath + "] ";
             log.error(mensajeError, e);
@@ -160,7 +190,7 @@ public class ProcesadorArchivoService {
 
                                 //crea el directorio
                                 bucketOperation
-                                        .createDirectory(definicion.getDestino() + "/" + definicion.getDirectorio());
+                                        .createDirectory(definicion.isReemplazar(), definicion.getDestino() + "/" + definicion.getDirectorio());
 
                                 return FileVisitResult.CONTINUE;
                             }
