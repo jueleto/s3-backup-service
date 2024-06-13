@@ -2,6 +2,7 @@
     {
         "tipo": "zipone",
         "directorio": "/opt/apache/files",
+        "destino": "",
         "reemplazar": false,
         "nota": ""
     }

@@ -15,9 +15,12 @@ import py.com.kuaa.s3_backup_service.s3.S3OperationInterface;
 public class RunnerInicial implements CommandLineRunner {
 
     @Autowired
-    S3OperationInterface bucketOperation;
+    ProcesadorArchivoService procesadorArchivo;
 
     @Autowired
+    S3OperationInterface bucketOperation;
+
+    //@Autowired
     public RunnerInicial() {
         log.info("\n##########\nRunnerInicial init\n##########");
     }
@@ -29,46 +32,46 @@ public class RunnerInicial implements CommandLineRunner {
         final String USAGE = """
 
         Usage:
-            <archivo> <directorioDestino>
+            <archivoDefinicion>
 
         Where:
-            archivo - the Amazon S3 object to upload.
-            directorioDestino - the directorioDestino where to uload.
+            archivoDefinicion: archivo donde está definido los respaldos a realizar.
+
         """;
 
-        if (args.length < 2) {
+        if (args.length < 1) {
             System.out.println(USAGE);
             //salir
             System.exit(1);
-        }
-
-        System.out.println("\n\nLECTURA EXITOSA DE ARGUMENTOS\n\n");
-
-        
+        }        
 
         String filePath = args[0];
-        String directorioDestino = args[1];
+        //String directorioDestino = args[1];
+
+
+        procesadorArchivo.leer(filePath);
+
 
         //servicioInicial.miMetodo(argumento1, argumento2);
         // File file = new File("/Users/emilio/repo/awsSss/docs/archiiiivo.txt");
-        File file = new File(filePath);
+        // File file = new File(filePath);
 
-        if(!file.exists()){
-            System.out.println("ARCHIVO NO EXISTE : "+filePath);
-            System.exit(1);
-        }
+        // if(!file.exists()){
+        //     System.out.println("ARCHIVO NO EXISTE : "+filePath);
+        //     System.exit(1);
+        // }
 
-        String nombreArchivo = file.getName();
+        // String nombreArchivo = file.getName();
 
-        try {
-            BucketObject bucketObject =  bucketOperation.uploadFile(nombreArchivo, directorioDestino , file);
-            System.out.println("ARCHIVO SUBIDO CON EXITO");
-            System.out.println("  objectKey: "+ bucketObject.getObjectKey());
-            System.out.println("");
+        // try {
+        //     BucketObject bucketObject =  bucketOperation.uploadFile(nombreArchivo, directorioDestino , file);
+        //     System.out.println("ARCHIVO SUBIDO CON EXITO");
+        //     System.out.println("  objectKey: "+ bucketObject.getObjectKey());
+        //     System.out.println("");
             
-        } catch (Exception e) {
-            System.out.println("ERROR AL SUBIR ARCHIVO A AWS");
-            e.printStackTrace();
-        }
+        // } catch (Exception e) {
+        //     System.out.println("ERROR AL SUBIR ARCHIVO A AWS");
+        //     e.printStackTrace();
+        // }
     }
 }
