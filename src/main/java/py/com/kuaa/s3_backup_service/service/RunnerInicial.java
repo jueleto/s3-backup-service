@@ -1,13 +1,10 @@
 package py.com.kuaa.s3_backup_service.service;
 
-import java.io.File;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
-import py.com.kuaa.s3_backup_service.s3.BucketObject;
 import py.com.kuaa.s3_backup_service.s3.S3OperationInterface;
 
 @Slf4j
@@ -20,7 +17,7 @@ public class RunnerInicial implements CommandLineRunner {
     @Autowired
     S3OperationInterface bucketOperation;
 
-    //@Autowired
+    // @Autowired
     public RunnerInicial() {
         log.info("\n##########\nRunnerInicial init\n##########");
     }

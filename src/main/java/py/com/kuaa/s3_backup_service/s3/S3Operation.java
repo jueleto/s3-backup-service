@@ -22,7 +22,7 @@ public class S3Operation implements S3OperationInterface {
     S3Client s3Client;
 
     public S3Operation() {
-
+        s3Client= new S3Client();
     }
 
     @Override
@@ -33,8 +33,8 @@ public class S3Operation implements S3OperationInterface {
         if (objectKey.startsWith("/"))
             objectKey = objectKey.substring(1);
 
-        boolean existeObjeto = checkIfObjectExists(objectKey);
-        System.out.println("- Existe en bucket?: " + existeObjeto);
+        // boolean existeObjeto = checkIfObjectExists(objectKey);
+        // System.out.println("- Existe en bucket?: " + existeObjeto);
 
         System.out.println("");
         s3Client.getClientAWS(accessKeyId, accessSecKey).putObject(
@@ -53,8 +53,8 @@ public class S3Operation implements S3OperationInterface {
         if (objectKey.startsWith("/"))
             objectKey = objectKey.substring(1);
 
-        boolean existeObjeto = checkIfObjectExists(objectKey);
-        System.out.println("- Existe en bucket?: " + existeObjeto);
+        // boolean existeObjeto = checkIfObjectExists(objectKey);
+        // System.out.println("- Existe en bucket?: " + existeObjeto);
 
         System.out.println("");
         s3Client.getClientAWS(accessKeyId, accessSecKey).putObject(
