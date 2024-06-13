@@ -19,6 +19,9 @@ public class S3Operation implements S3OperationInterface {
     @Value("${s3.bucket.name}")
     private String bucketName;
 
+    @Value("${s3.bucket.region}")
+    private String bucketRegion;
+
     S3Client s3Client;
 
     public S3Operation() {
@@ -40,7 +43,7 @@ public class S3Operation implements S3OperationInterface {
 
         if (!existeObjeto) {
             System.out.println("  Creando directorio: " + objectKey);
-            s3Client.getClientAWS(accessKeyId, accessSecKey).putObject(
+            s3Client.getClientAWS(accessKeyId, accessSecKey, bucketRegion).putObject(
                     bucketName,
                     objectKey,
                     "");
@@ -50,7 +53,7 @@ public class S3Operation implements S3OperationInterface {
             if (reemplazar) {
 
                 System.out.println("  Reemplazando directorio: " + objectKey);
-                s3Client.getClientAWS(accessKeyId, accessSecKey).putObject(
+                s3Client.getClientAWS(accessKeyId, accessSecKey, bucketRegion).putObject(
                         bucketName,
                         objectKey,
                         "");
@@ -85,7 +88,7 @@ public class S3Operation implements S3OperationInterface {
 
         if (!existeObjeto) {
             System.out.println("  Subiendo archivo: " + objectKey);
-            s3Client.getClientAWS(accessKeyId, accessSecKey).putObject(
+            s3Client.getClientAWS(accessKeyId, accessSecKey, bucketRegion).putObject(
                     bucketName,
                     objectKey,
                     archivo);
@@ -95,7 +98,7 @@ public class S3Operation implements S3OperationInterface {
             if (reemplazar) {
 
                 System.out.println("  Reemplazando archivo: " + objectKey);
-                s3Client.getClientAWS(accessKeyId, accessSecKey).putObject(
+                s3Client.getClientAWS(accessKeyId, accessSecKey, bucketRegion).putObject(
                         bucketName,
                         objectKey,
                         archivo);
@@ -117,7 +120,7 @@ public class S3Operation implements S3OperationInterface {
     @Override
     public boolean checkIfObjectExists(String objectKey) {
 
-        boolean exists = s3Client.getClientAWS(accessKeyId, accessSecKey)
+        boolean exists = s3Client.getClientAWS(accessKeyId, accessSecKey, bucketRegion)
                 .doesObjectExist(bucketName, objectKey);
 
         return exists;
