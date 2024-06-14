@@ -189,6 +189,7 @@ public class ProcesadorArchivoService {
         if (definicion.getTipo().equalsIgnoreCase("original")) {
             if (file.isFile()) {
                 // subir directamente
+                System.out.println("- original file: " + file);
                 subirArchivoAws(definicion.getDestino(), definicion.isReemplazar(),
                         definicion.getDirectorio());
             }
@@ -202,6 +203,7 @@ public class ProcesadorArchivoService {
         if (definicion.getTipo().equalsIgnoreCase("zipfile")) {
             if (file.isFile()) {
                 // subir directamente
+                System.out.println("- zipfile file: " + file);
                 File fileComprimido = zipFile.compressFile(file);
                 subirArchivoZipAws(definicion.getDestino(), definicion.isReemplazar(),
                         definicion.getDirectorio(), fileComprimido);
@@ -209,6 +211,23 @@ public class ProcesadorArchivoService {
 
             if (file.isDirectory()) {
                 subirDirectorioZipOne(definicion);
+            }
+        }
+        if (definicion.getTipo().equalsIgnoreCase("zipdirectory")) {
+            if (file.isFile()) {
+                String mensajeError = "Tipo zipdirectory debe ser un directorio y no un archivo ["
+                        + definicion.getDirectorio() + "] ";
+                log.error(mensajeError);
+                System.exit(1);
+
+            }
+
+            if (file.isDirectory()) {
+                // comprime el directorio entero y lo sube como zip
+                System.out.println("- zipdirectory directory: " + definicion.getDirectorio());
+                File fileComprimido = zipFile.compressFile(new File(file.toString()));
+                subirArchivoZipAws(definicion.getDestino(), definicion.isReemplazar(),
+                        file.toString(), fileComprimido);
             }
         }
 
@@ -226,7 +245,7 @@ public class ProcesadorArchivoService {
                             @Override
                             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                                 // Procesa cada archivo encontrado
-                                System.out.println("- original Archivo: " + file);
+                                System.out.println("- original file: " + file);
                                 // Aquí puedes agregar código para leer y procesar el archivo si es necesario
                                 subirArchivoAws(definicion.getDestino(), definicion.isReemplazar(),
                                         file.toString());
@@ -237,7 +256,7 @@ public class ProcesadorArchivoService {
                             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
                                     throws IOException {
                                 // Procesa cada directorio encontrado
-                                System.out.println("- original Directorio: " + dir);
+                                System.out.println("- original directory: " + dir);
 
                                 //crea el directorio
                                 bucketOperation
@@ -273,7 +292,7 @@ public class ProcesadorArchivoService {
                         @Override
                         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                             // Procesa cada archivo encontrado
-                            System.out.println("- zipfile Archivo: " + file);
+                            System.out.println("- zipfile file: " + file);
                             // Aquí puedes agregar código para leer y procesar el archivo si es necesario
                             File fileComprimido = zipFile.compressFile(new File(file.toString()));
                             subirArchivoZipAws(definicion.getDestino(), definicion.isReemplazar(),
@@ -286,7 +305,7 @@ public class ProcesadorArchivoService {
                         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
                                 throws IOException {
                             // Procesa cada directorio encontrado
-                            System.out.println("- zipfile Directorio: " + dir);
+                            System.out.println("- zipfile directory: " + dir);
 
                             //crea el directorio
                             bucketOperation

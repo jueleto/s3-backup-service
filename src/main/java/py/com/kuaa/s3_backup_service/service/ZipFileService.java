@@ -47,11 +47,11 @@ public class ZipFileService {
             return zipFilePath.toFile();
         } catch (IOException e) {
             
-            String mensajeError = "Archivo al comprimir [" + fileToCompress.getAbsolutePath() + "] ";
+            String mensajeError = "IO Error al comprimir [" + fileToCompress.getAbsolutePath() + "] ";
             log.error(mensajeError, e);
             System.exit(1);
         } catch (InterruptedException e) {
-            String mensajeError = "Archivo al comprimir [" + fileToCompress.getAbsolutePath() + "] ";
+            String mensajeError = "IE Error al comprimir [" + fileToCompress.getAbsolutePath() + "] ";
             log.error(mensajeError, e);
             System.exit(1);
         }
@@ -66,6 +66,12 @@ public class ZipFileService {
             return String.format("powershell Compress-Archive -Path %s -DestinationPath %s",
                     fileToCompress.getAbsolutePath(), zipFilePath.toAbsolutePath().toString());
         } else {
+
+            if(fileToCompress.isDirectory()){
+                return String.format("zip -r %s %s",
+                    zipFilePath.toAbsolutePath().toString(), fileToCompress.getAbsolutePath());
+            }
+
             // Comando para Unix-like (Linux/Mac)
             return String.format("zip -j %s %s",
                     zipFilePath.toAbsolutePath().toString(), fileToCompress.getAbsolutePath());
