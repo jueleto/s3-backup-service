@@ -91,8 +91,8 @@ public class ProcesadorArchivoService {
             }
 
             // verificar destino
-            if (definicion.getDestino().endsWith("/")) {
-                String mensajeError = "Archivo de definición incorrecto, destino no puede terminar en / [" + definicion.getDestino() + "] ";
+            if (definicion.getDestinoBase().endsWith("/")) {
+                String mensajeError = "Archivo de definición incorrecto, destino no puede terminar en / [" + definicion.getDestinoBase() + "] ";
                 log.error(mensajeError);
                 System.exit(1);
             }
@@ -190,7 +190,7 @@ public class ProcesadorArchivoService {
             if (file.isFile()) {
                 // subir directamente
                 System.out.println("- original file: " + file);
-                subirArchivoAws(definicion.getDestino(), definicion.isReemplazar(),
+                subirArchivoAws(definicion.getDestinoBase(), definicion.isReemplazar(),
                         definicion.getDirectorio());
             }
 
@@ -205,7 +205,7 @@ public class ProcesadorArchivoService {
                 // subir directamente
                 System.out.println("- zipfile file: " + file);
                 File fileComprimido = zipFile.compressFile(file);
-                subirArchivoZipAws(definicion.getDestino(), definicion.isReemplazar(),
+                subirArchivoZipAws(definicion.getDestinoBase(), definicion.isReemplazar(),
                         definicion.getDirectorio(), fileComprimido);
             }
 
@@ -226,7 +226,7 @@ public class ProcesadorArchivoService {
                 // comprime el directorio entero y lo sube como zip
                 System.out.println("- zipdirectory directory: " + definicion.getDirectorio());
                 File fileComprimido = zipFile.compressFile(new File(file.toString()));
-                subirArchivoZipAws(definicion.getDestino(), definicion.isReemplazar(),
+                subirArchivoZipAws(definicion.getDestinoBase(), definicion.isReemplazar(),
                         file.toString(), fileComprimido);
             }
         }
@@ -247,7 +247,7 @@ public class ProcesadorArchivoService {
                                 // Procesa cada archivo encontrado
                                 System.out.println("- original file: " + file);
                                 // Aquí puedes agregar código para leer y procesar el archivo si es necesario
-                                subirArchivoAws(definicion.getDestino(), definicion.isReemplazar(),
+                                subirArchivoAws(definicion.getDestinoBase(), definicion.isReemplazar(),
                                         file.toString());
                                 return FileVisitResult.CONTINUE;
                             }
@@ -260,7 +260,7 @@ public class ProcesadorArchivoService {
 
                                 //crea el directorio
                                 bucketOperation
-                                        .createDirectory(definicion.isReemplazar(), definicion.getDestino() + "/" + definicion.getDirectorio());
+                                        .createDirectory(definicion.isReemplazar(), definicion.getDestinoBase() + "/" + definicion.getDirectorio());
 
                                 return FileVisitResult.CONTINUE;
                             }
@@ -295,7 +295,7 @@ public class ProcesadorArchivoService {
                             System.out.println("- zipfile file: " + file);
                             // Aquí puedes agregar código para leer y procesar el archivo si es necesario
                             File fileComprimido = zipFile.compressFile(new File(file.toString()));
-                            subirArchivoZipAws(definicion.getDestino(), definicion.isReemplazar(),
+                            subirArchivoZipAws(definicion.getDestinoBase(), definicion.isReemplazar(),
                             file.toString(), fileComprimido);
 
                             return FileVisitResult.CONTINUE;
@@ -309,7 +309,7 @@ public class ProcesadorArchivoService {
 
                             //crea el directorio
                             bucketOperation
-                                    .createDirectory(definicion.isReemplazar(), definicion.getDestino() + "/" + definicion.getDirectorio());
+                                    .createDirectory(definicion.isReemplazar(), definicion.getDestinoBase() + "/" + definicion.getDirectorio());
 
                             return FileVisitResult.CONTINUE;
                         }

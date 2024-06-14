@@ -2,7 +2,7 @@
     {
         "tipo": "zipfile",
         "directorio": "/opt/apache/files",
-        "destino": "",
+        "destinoBase": "",
         "reemplazar": false,
         "nota": ""
     }

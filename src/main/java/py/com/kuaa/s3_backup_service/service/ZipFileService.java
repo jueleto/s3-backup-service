@@ -46,7 +46,7 @@ public class ZipFileService {
             // Retornar el archivo ZIP resultante
             return zipFilePath.toFile();
         } catch (IOException e) {
-            
+
             String mensajeError = "IO Error al comprimir [" + fileToCompress.getAbsolutePath() + "] ";
             log.error(mensajeError, e);
             System.exit(1);
@@ -62,14 +62,18 @@ public class ZipFileService {
     private String getZipCommand(File fileToCompress, Path zipFilePath) {
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("win")) {
+            if (fileToCompress.isDirectory()) {
+                return String.format("powershell Compress-Archive -Path %s -DestinationPath %s",
+                        fileToCompress.getAbsolutePath(), zipFilePath.toAbsolutePath().toString());
+            }
             // Comando para Windows (requiere que zip esté instalado y en el PATH)
             return String.format("powershell Compress-Archive -Path %s -DestinationPath %s",
                     fileToCompress.getAbsolutePath(), zipFilePath.toAbsolutePath().toString());
         } else {
 
-            if(fileToCompress.isDirectory()){
+            if (fileToCompress.isDirectory()) {
                 return String.format("zip -r %s %s",
-                    zipFilePath.toAbsolutePath().toString(), fileToCompress.getAbsolutePath());
+                        zipFilePath.toAbsolutePath().toString(), fileToCompress.getAbsolutePath());
             }
 
             // Comando para Unix-like (Linux/Mac)

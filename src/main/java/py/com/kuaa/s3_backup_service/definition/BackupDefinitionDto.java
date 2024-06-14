@@ -15,7 +15,7 @@ public class BackupDefinitionDto {
 
     private String tipo;
     private String directorio;
-    private String destino;
+    private String destinoBase;
     private boolean reemplazar;
     private String nota;
 
