@@ -9,6 +9,7 @@ Al programa se le pasa un archivo json donde está definido de que y como se rea
         "tipo": "",
         "directorio": "",
         "destinoBase": "",
+        "destinoForzado": "",
         "reemplazar": false,
         "nota": ""
     }
@@ -21,7 +22,9 @@ Al programa se le pasa un archivo json donde está definido de que y como se rea
 - directorio:
 - - El directorio o archivo que se subirá o recorrerá para subir todo lo que está dentro
 - destinoBase:
-- - El directorio donde se subirá el archivo, dejar vacio para que use la raiz
+- - El directorio donde se subirá el archivo, dejar vacio para que use la raiz.
+- destinoForzado:
+- - El `directorio` donde se subirá será reemplazado por `destinoForzado`, solo funciona para archivos y no para directorios. Dejar vacio para no activarlo
 - reemplazar: 
 - - Si se reemplazará o no el archivo o los archivos.
 - nota:

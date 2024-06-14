@@ -74,9 +74,13 @@ public class S3Operation implements S3OperationInterface {
     }
 
     @Override
-    public BucketObject uploadFile(boolean reemplazar, String nombreArchivo, String directorioDestino, File archivo) {
+    public BucketObject uploadFile(boolean reemplazar, String destinoForzado, String nombreArchivo, String directorioDestino, File archivo) {
         System.out.println("- Preparando archivo: " + archivo.getAbsolutePath());
         String objectKey = directorioDestino + "/" + nombreArchivo;
+
+        if(!destinoForzado.equalsIgnoreCase("")){
+            objectKey = destinoForzado + "/" + nombreArchivo;
+        }
 
         if (objectKey.startsWith("/"))
             objectKey = objectKey.substring(1);

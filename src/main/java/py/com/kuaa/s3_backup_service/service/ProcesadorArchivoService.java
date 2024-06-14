@@ -90,9 +90,16 @@ public class ProcesadorArchivoService {
                 System.exit(1);
             }
 
-            // verificar destino
+            // verificar destinoBase
             if (definicion.getDestinoBase().endsWith("/")) {
-                String mensajeError = "Archivo de definición incorrecto, destino no puede terminar en / [" + definicion.getDestinoBase() + "] ";
+                String mensajeError = "Archivo de definición incorrecto, destinoBase no puede terminar en / [" + definicion.getDestinoBase() + "] ";
+                log.error(mensajeError);
+                System.exit(1);
+            }
+
+            // verificar destinoForzado
+            if (definicion.getDestinoForzado().endsWith("/")) {
+                String mensajeError = "Archivo de definición incorrecto, destinoForzado no puede terminar en / [" + definicion.getDestinoForzado() + "] ";
                 log.error(mensajeError);
                 System.exit(1);
             }
@@ -111,7 +118,7 @@ public class ProcesadorArchivoService {
 
     }
 
-    private void subirArchivoAws(String directorioDestino, boolean reemplazar, String filePath) {
+    private void subirArchivoAws(String destinoForzado, String directorioDestino, boolean reemplazar, String filePath) {
         File file = new File(filePath);
 
         if (!file.exists()) {
@@ -130,6 +137,7 @@ public class ProcesadorArchivoService {
         try {
             BucketObject bucketObject = bucketOperation.uploadFile(
                     reemplazar,
+                    destinoForzado,
                     nombreArchivo,
                     directorioDestino+filePath,
                     file);
@@ -141,7 +149,7 @@ public class ProcesadorArchivoService {
         }
     }
 
-    private void subirArchivoZipAws(String directorioDestino, boolean reemplazar,
+    private void subirArchivoZipAws(String destinoForzado, String directorioDestino, boolean reemplazar,
             String filePath, File fileZip) {
 
         if (!fileZip.exists()) {
@@ -164,6 +172,7 @@ public class ProcesadorArchivoService {
         try {
             BucketObject bucketObject = bucketOperation.uploadFile(
                     reemplazar,
+                    destinoForzado,
                     nombreArchivoZip,
                     directorioDestino+filePath,
                     fileZip);
@@ -190,7 +199,7 @@ public class ProcesadorArchivoService {
             if (file.isFile()) {
                 // subir directamente
                 System.out.println("- original file: " + file);
-                subirArchivoAws(definicion.getDestinoBase(), definicion.isReemplazar(),
+                subirArchivoAws( definicion.getDestinoForzado(), definicion.getDestinoBase(), definicion.isReemplazar(),
                         definicion.getDirectorio());
             }
 
@@ -205,7 +214,7 @@ public class ProcesadorArchivoService {
                 // subir directamente
                 System.out.println("- zipfile file: " + file);
                 File fileComprimido = zipFile.compressFile(file);
-                subirArchivoZipAws(definicion.getDestinoBase(), definicion.isReemplazar(),
+                subirArchivoZipAws(definicion.getDestinoForzado(),definicion.getDestinoBase(), definicion.isReemplazar(),
                         definicion.getDirectorio(), fileComprimido);
             }
 
@@ -226,7 +235,7 @@ public class ProcesadorArchivoService {
                 // comprime el directorio entero y lo sube como zip
                 System.out.println("- zipdirectory directory: " + definicion.getDirectorio());
                 File fileComprimido = zipFile.compressFile(new File(file.toString()));
-                subirArchivoZipAws(definicion.getDestinoBase(), definicion.isReemplazar(),
+                subirArchivoZipAws(definicion.getDestinoForzado(), definicion.getDestinoBase(), definicion.isReemplazar(),
                         file.toString(), fileComprimido);
             }
         }
@@ -247,7 +256,7 @@ public class ProcesadorArchivoService {
                                 // Procesa cada archivo encontrado
                                 System.out.println("- original file: " + file);
                                 // Aquí puedes agregar código para leer y procesar el archivo si es necesario
-                                subirArchivoAws(definicion.getDestinoBase(), definicion.isReemplazar(),
+                                subirArchivoAws(definicion.getDestinoForzado(), definicion.getDestinoBase(), definicion.isReemplazar(),
                                         file.toString());
                                 return FileVisitResult.CONTINUE;
                             }
@@ -295,7 +304,7 @@ public class ProcesadorArchivoService {
                             System.out.println("- zipfile file: " + file);
                             // Aquí puedes agregar código para leer y procesar el archivo si es necesario
                             File fileComprimido = zipFile.compressFile(new File(file.toString()));
-                            subirArchivoZipAws(definicion.getDestinoBase(), definicion.isReemplazar(),
+                            subirArchivoZipAws(definicion.getDestinoForzado(), definicion.getDestinoBase(), definicion.isReemplazar(),
                             file.toString(), fileComprimido);
 
                             return FileVisitResult.CONTINUE;

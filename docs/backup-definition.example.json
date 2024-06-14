@@ -3,6 +3,7 @@
         "tipo": "zipfile",
         "directorio": "/opt/apache/files",
         "destinoBase": "",
+        "destinoForzado": "",
         "reemplazar": false,
         "nota": ""
     }
