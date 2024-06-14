@@ -34,6 +34,9 @@ public class ProcesadorArchivoService {
     @Autowired
     S3OperationInterface bucketOperation;
 
+    @Autowired
+    ZipFileService zipFile;
+
     public ProcesadorArchivoService() {
         log.info("\n##########\nProcesadorArchivoService init\n##########");
     }
@@ -109,7 +112,6 @@ public class ProcesadorArchivoService {
     }
 
     private void subirArchivoAws(String directorioDestino, boolean reemplazar, String filePath) {
-
         File file = new File(filePath);
 
         if (!file.exists()) {
@@ -139,6 +141,40 @@ public class ProcesadorArchivoService {
         }
     }
 
+    private void subirArchivoZipAws(String directorioDestino, boolean reemplazar,
+            String filePath, File fileZip) {
+
+        if (!fileZip.exists()) {
+            String mensajeError = "Archivo zip no existe [" + fileZip.getAbsolutePath() + "] ";
+            log.error(mensajeError);
+            System.exit(1);
+        }
+
+        String nombreArchivoZip = fileZip.getName();
+
+        File file = new File(filePath);
+        String nombreArchivo = "";
+
+        if (file.isFile()) {
+            nombreArchivo = file.getName();
+            //extraemos el nombre del archivo del path
+            filePath = filePath.substring(0, filePath.length() - nombreArchivo.length()-1);
+        }
+
+        try {
+            BucketObject bucketObject = bucketOperation.uploadFile(
+                    reemplazar,
+                    nombreArchivoZip,
+                    directorioDestino+filePath,
+                    fileZip);
+            
+        } catch (Exception e) {
+            String mensajeError = "Error al subir a aws [" + filePath + "] ";
+            log.error(mensajeError, e);
+            System.exit(1);
+        }
+    }
+
     private void recorrerFile(BackupDefinitionDto definicion) {
 
         File file = new File(definicion.getDirectorio());
@@ -160,8 +196,23 @@ public class ProcesadorArchivoService {
             if (file.isDirectory()) {
                 subirDirectorioOriginal(definicion);
             }
-
         }
+
+
+        if (definicion.getTipo().equalsIgnoreCase("zipone")) {
+            if (file.isFile()) {
+                // subir directamente
+                File fileComprimido = zipFile.compressFile(file);
+                subirArchivoZipAws(definicion.getDestino(), definicion.isReemplazar(),
+                        definicion.getDirectorio(), fileComprimido);
+            }
+
+            if (file.isDirectory()) {
+                subirDirectorioZip(definicion);
+            }
+        }
+
+
 
     }
 
@@ -209,6 +260,54 @@ public class ProcesadorArchivoService {
 
     }
 
+
+
+
+    private void subirDirectorioZip(BackupDefinitionDto definicion){
+        // Define la ruta inicial del directorio a recorrer
+        Path startPath = Paths.get(definicion.getDirectorio());
+
+        try {
+            Files.walkFileTree(startPath, EnumSet.noneOf(FileVisitOption.class), Integer.MAX_VALUE,
+                    new SimpleFileVisitor<Path>() {
+                        @Override
+                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                            // Procesa cada archivo encontrado
+                            System.out.println("subirDirectorioZip Archivo: " + file);
+                            // Aquí puedes agregar código para leer y procesar el archivo si es necesario
+                            File fileComprimido = zipFile.compressFile(new File(file.toString()));
+                            subirArchivoZipAws(definicion.getDestino(), definicion.isReemplazar(),
+                                    definicion.getDirectorio(), fileComprimido);
+
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        @Override
+                        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
+                                throws IOException {
+                            // Procesa cada directorio encontrado
+                            System.out.println("subirDirectorioZip Directorio: " + dir);
+
+                            //crea el directorio
+                            bucketOperation
+                                    .createDirectory(definicion.isReemplazar(), definicion.getDestino() + "/" + definicion.getDirectorio());
+
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        @Override
+                        public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                            System.err.println("subirDirectorioZip Error visitando el archivo: " + file + " (" + exc.getMessage() + ")");
+                            return FileVisitResult.CONTINUE;
+                        }
+                    });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    
+
+}
 
 
 }
