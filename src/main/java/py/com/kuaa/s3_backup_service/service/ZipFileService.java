@@ -35,7 +35,10 @@ public class ZipFileService {
 
             // Ejecutar el comando del SO
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
-            processBuilder.directory(fileToCompress.getParentFile());
+            // processBuilder.directory(fileToCompress.getParentFile()); comprime con
+            // directorio padre y todo
+            processBuilder.directory(fileToCompress); // Cambiar al directorio que contiene el contenido a comprimir
+
             Process process = processBuilder.start();
             int exitCode = process.waitFor();
 
@@ -63,8 +66,15 @@ public class ZipFileService {
         String os = System.getProperty("os.name").toLowerCase();
         if (os.contains("win")) {
             if (fileToCompress.isDirectory()) {
-                return String.format("powershell Compress-Archive -Path %s -DestinationPath %s",
+                // comprime todo el predirectorio
+                // return String.format("powershell Compress-Archive -Path %s -DestinationPath
+                // %s",
+                // fileToCompress.getAbsolutePath(), zipFilePath.toAbsolutePath().toString());
+
+                // comprime solo el contenido
+                return String.format("powershell Compress-Archive -Path %s\\* -DestinationPath %s",
                         fileToCompress.getAbsolutePath(), zipFilePath.toAbsolutePath().toString());
+
             }
             // Comando para Windows (requiere que zip esté instalado y en el PATH)
             return String.format("powershell Compress-Archive -Path %s -DestinationPath %s",
@@ -72,8 +82,17 @@ public class ZipFileService {
         } else {
 
             if (fileToCompress.isDirectory()) {
-                return String.format("zip -r %s %s",
-                        zipFilePath.toAbsolutePath().toString(), fileToCompress.getAbsolutePath());
+                // comprime todo el predirectorio
+                // return String.format("zip -r %s %s",
+                // zipFilePath.toAbsolutePath().toString(), fileToCompress.getAbsolutePath());
+
+                // comprime dentro con una carpeta padre adentro
+                // return String.format("zip -r %s %s",
+                // zipFilePath.toAbsolutePath().toString(), fileToCompress.getName());
+
+                // comprime solo el contenido
+                return String.format("zip -r %s .",
+                        zipFilePath.toAbsolutePath().toString());
             }
 
             // Comando para Unix-like (Linux/Mac)
