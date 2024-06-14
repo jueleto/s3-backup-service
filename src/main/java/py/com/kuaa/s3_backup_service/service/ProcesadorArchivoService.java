@@ -77,7 +77,7 @@ public class ProcesadorArchivoService {
         for (BackupDefinitionDto definicion : this.definicionList) {
             // System.out.println(definicion);
             // verificar tipo
-            if (!(",original,zip,zipfile,").contains("," + definicion.getTipo() + ",")) {
+            if (!(",original,zipdirectory,zipfile,").contains("," + definicion.getTipo() + ",")) {
                 String mensajeError = "Archivo de definición incorrecto, tipo [" + definicion.getTipo() + "] ";
                 log.error(mensajeError);
                 System.exit(1);

@@ -15,10 +15,10 @@ Al programa se le pasa un archivo json donde está definido de que y como se rea
 ```
 - tipo:
 - - original: se sube el archivo o directorio tal cual como está.
-- - zip : comprime todo el directorio y lo sube como archivo único, comprime el archivo.
-- - zipfile: recorre el dirctorio, comprime cada archivo en forma individual y lo sube.
+- - zipdirectory : comprime todo el directorio y lo sube como archivo único, si o si debe ser directorio.
+- - zipfile: recorre el dirctorio, comprime cada archivo en forma individual y lo sube en el mismo directorio.
 - directorio:
-- - El directorio o archivo que se subirá
+- - El directorio o archivo que se subirá o recorrerá para subir todo lo que está dentro
 - destino:
 - - El directorio donde se subirá el archivo, dejar vacio para que use la raiz
 - reemplazar: 
