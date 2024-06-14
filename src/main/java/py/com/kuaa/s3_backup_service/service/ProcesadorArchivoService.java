@@ -77,7 +77,7 @@ public class ProcesadorArchivoService {
         for (BackupDefinitionDto definicion : this.definicionList) {
             // System.out.println(definicion);
             // verificar tipo
-            if (!(",original,zip,zipone,").contains("," + definicion.getTipo() + ",")) {
+            if (!(",original,zip,zipfile,").contains("," + definicion.getTipo() + ",")) {
                 String mensajeError = "Archivo de definición incorrecto, tipo [" + definicion.getTipo() + "] ";
                 log.error(mensajeError);
                 System.exit(1);
@@ -199,7 +199,7 @@ public class ProcesadorArchivoService {
         }
 
 
-        if (definicion.getTipo().equalsIgnoreCase("zipone")) {
+        if (definicion.getTipo().equalsIgnoreCase("zipfile")) {
             if (file.isFile()) {
                 // subir directamente
                 File fileComprimido = zipFile.compressFile(file);
@@ -273,7 +273,7 @@ public class ProcesadorArchivoService {
                         @Override
                         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                             // Procesa cada archivo encontrado
-                            System.out.println("- zipone Archivo: " + file);
+                            System.out.println("- zipfile Archivo: " + file);
                             // Aquí puedes agregar código para leer y procesar el archivo si es necesario
                             File fileComprimido = zipFile.compressFile(new File(file.toString()));
                             subirArchivoZipAws(definicion.getDestino(), definicion.isReemplazar(),
@@ -286,7 +286,7 @@ public class ProcesadorArchivoService {
                         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
                                 throws IOException {
                             // Procesa cada directorio encontrado
-                            System.out.println("- zipone Directorio: " + dir);
+                            System.out.println("- zipfile Directorio: " + dir);
 
                             //crea el directorio
                             bucketOperation
@@ -297,7 +297,7 @@ public class ProcesadorArchivoService {
 
                         @Override
                         public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-                            System.err.println("- zipone Error visitando el archivo: " + file + " (" + exc.getMessage() + ")");
+                            System.err.println("- zipfile Error visitando el archivo: " + file + " (" + exc.getMessage() + ")");
                             return FileVisitResult.CONTINUE;
                         }
                     });

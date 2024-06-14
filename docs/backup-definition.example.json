@@ -1,6 +1,6 @@
 [
     {
-        "tipo": "zipone",
+        "tipo": "zipfile",
         "directorio": "/opt/apache/files",
         "destino": "",
         "reemplazar": false,
