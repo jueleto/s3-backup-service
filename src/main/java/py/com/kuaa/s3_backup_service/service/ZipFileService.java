@@ -35,9 +35,13 @@ public class ZipFileService {
 
             // Ejecutar el comando del SO
             ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
-            // processBuilder.directory(fileToCompress.getParentFile()); comprime con
-            // directorio padre y todo
-            processBuilder.directory(fileToCompress); // Cambiar al directorio que contiene el contenido a comprimir
+            if(fileToCompress.isFile()){
+                // cuando es archivo
+                processBuilder.directory(fileToCompress.getParentFile()); //comprime con directorio padre y todo
+            }else{
+                // cuando es directorio
+                processBuilder.directory(fileToCompress); // Cambiar al directorio que contiene el contenido a comprimir
+            }
 
             Process process = processBuilder.start();
             int exitCode = process.waitFor();
@@ -82,6 +86,9 @@ public class ZipFileService {
         } else {
 
             if (fileToCompress.isDirectory()) {
+                // if(fileToCompress.getName().equalsIgnoreCase(".DS_Store")){
+
+                // }
                 // comprime todo el predirectorio
                 // return String.format("zip -r %s %s",
                 // zipFilePath.toAbsolutePath().toString(), fileToCompress.getAbsolutePath());

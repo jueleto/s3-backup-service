@@ -219,7 +219,7 @@ public class ProcesadorArchivoService {
             }
 
             if (file.isDirectory()) {
-                subirDirectorioZipOne(definicion);
+                subirDirectorioZipFile(definicion);
             }
         }
         if (definicion.getTipo().equalsIgnoreCase("zipdirectory")) {
@@ -291,7 +291,7 @@ public class ProcesadorArchivoService {
 
 
 
-    private void subirDirectorioZipOne(BackupDefinitionDto definicion){
+    private void subirDirectorioZipFile(BackupDefinitionDto definicion){
         // Define la ruta inicial del directorio a recorrer
         Path startPath = Paths.get(definicion.getDirectorio());
 
@@ -299,13 +299,22 @@ public class ProcesadorArchivoService {
             Files.walkFileTree(startPath, EnumSet.noneOf(FileVisitOption.class), Integer.MAX_VALUE,
                     new SimpleFileVisitor<Path>() {
                         @Override
-                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        public FileVisitResult visitFile(Path filePath, BasicFileAttributes attrs) throws IOException {
                             // Procesa cada archivo encontrado
-                            System.out.println("- zipfile file: " + file);
+                            System.out.println("- zipfile file: " + filePath);
+
+                            File file = new File(filePath.toString());
+
+                            //ignorar algunos archivos
+                            if(file.getName().equalsIgnoreCase(".DS_Store")){
+                                System.out.println("  IGNORAR file: " + filePath);
+                                return FileVisitResult.CONTINUE;
+                            }
+
                             // Aquí puedes agregar código para leer y procesar el archivo si es necesario
-                            File fileComprimido = zipFile.compressFile(new File(file.toString()));
+                            File fileComprimido = zipFile.compressFile(file);
                             subirArchivoZipAws(definicion.getDestinoForzado(), definicion.getDestinoBase(), definicion.isReemplazar(),
-                            file.toString(), fileComprimido);
+                            filePath.toString(), fileComprimido);
 
                             return FileVisitResult.CONTINUE;
                         }
@@ -316,6 +325,7 @@ public class ProcesadorArchivoService {
                             // Procesa cada directorio encontrado
                             System.out.println("- zipfile directory: " + dir);
 
+                            
                             //crea el directorio
                             bucketOperation
                                     .createDirectory(definicion.isReemplazar(), definicion.getDestinoBase() + "/" + definicion.getDirectorio());
