@@ -48,3 +48,8 @@ Mac
 > git checkout develop
 
 
+
+## Como ejecutar?
+> ${javaHome}/bin/java -jar /opt/${jarFinalName}.jar "/opt/backup-definition.json" --spring.config.location="/opt/application.properties"
+
+
