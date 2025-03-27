@@ -187,7 +187,7 @@ public class ProcesadorArchivoService {
     private void recorrerFile(BackupDefinitionDto definicion) {
 
         File file = new File(definicion.getDirectorio());
-        System.out.println("");
+        
 
         if (!file.exists()) {
             String mensajeError = "Archivo o directorio no existe [" + definicion.getDirectorio() + "] ";
@@ -199,6 +199,7 @@ public class ProcesadorArchivoService {
         if (definicion.getTipo().equalsIgnoreCase("original")) {
             if (file.isFile()) {
                 // subir directamente
+                System.out.println("");
                 System.out.println("- original file: " + file);
                 subirArchivoAws( definicion.getDestinoForzado(), definicion.getDestinoBase(), definicion.isReemplazar(),
                         definicion.getDirectorio());
@@ -213,6 +214,7 @@ public class ProcesadorArchivoService {
         if (definicion.getTipo().equalsIgnoreCase("zipfile")) {
             if (file.isFile()) {
                 // subir directamente
+                System.out.println("");
                 System.out.println("- zipfile file: " + file);
                 File fileComprimido = zipFile.compressFile(file);
                 subirArchivoZipAws(definicion.getDestinoForzado(),definicion.getDestinoBase(), definicion.isReemplazar(),
@@ -222,6 +224,7 @@ public class ProcesadorArchivoService {
             }
 
             if (file.isDirectory()) {
+                System.out.println("");
                 subirDirectorioZipFile(definicion);
             }
 
@@ -238,10 +241,13 @@ public class ProcesadorArchivoService {
 
             if (file.isDirectory()) {
                 // comprime el directorio entero y lo sube como zip
+                System.out.println("");
                 System.out.println("- zipdirectory directory: " + definicion.getDirectorio());
                 File fileComprimido = zipFile.compressFile(new File(file.toString()));
                 subirArchivoZipAws(definicion.getDestinoForzado(), definicion.getDestinoBase(), definicion.isReemplazar(),
                         file.toString(), fileComprimido);
+                
+                
             }
         }
 
@@ -306,6 +312,7 @@ public class ProcesadorArchivoService {
                         @Override
                         public FileVisitResult visitFile(Path filePath, BasicFileAttributes attrs) throws IOException {
                             // Procesa cada archivo encontrado
+                            System.out.println("");
                             System.out.println("- zipfile file: " + filePath);
 
                             File file = new File(filePath.toString());
