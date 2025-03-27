@@ -117,7 +117,7 @@ public class S3Operation implements S3OperationInterface {
 
         }
 
-        System.out.println("");
+        //System.out.println("");
         return new BucketObject(objectKey, bucketName);
     }
 

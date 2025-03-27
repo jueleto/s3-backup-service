@@ -187,6 +187,7 @@ public class ProcesadorArchivoService {
     private void recorrerFile(BackupDefinitionDto definicion) {
 
         File file = new File(definicion.getDirectorio());
+        System.out.println("");
 
         if (!file.exists()) {
             String mensajeError = "Archivo o directorio no existe [" + definicion.getDirectorio() + "] ";
