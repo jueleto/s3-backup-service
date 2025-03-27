@@ -216,11 +216,15 @@ public class ProcesadorArchivoService {
                 File fileComprimido = zipFile.compressFile(file);
                 subirArchivoZipAws(definicion.getDestinoForzado(),definicion.getDestinoBase(), definicion.isReemplazar(),
                         definicion.getDirectorio(), fileComprimido);
+                // eliminar archivo del tmp
+                System.out.println("- Eliminando archivo tmp: " + fileComprimido.getAbsolutePath() +" result: "+fileComprimido.delete());
             }
 
             if (file.isDirectory()) {
                 subirDirectorioZipFile(definicion);
             }
+
+        
         }
         if (definicion.getTipo().equalsIgnoreCase("zipdirectory")) {
             if (file.isFile()) {
@@ -315,6 +319,9 @@ public class ProcesadorArchivoService {
                             File fileComprimido = zipFile.compressFile(file);
                             subirArchivoZipAws(definicion.getDestinoForzado(), definicion.getDestinoBase(), definicion.isReemplazar(),
                             filePath.toString(), fileComprimido);
+
+                            System.out.println("- Eliminando archivo tmp: " + fileComprimido.getAbsolutePath() +" result: "+fileComprimido.delete());
+                            
 
                             return FileVisitResult.CONTINUE;
                         }
