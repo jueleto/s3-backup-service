@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>py.com.kuaa</groupId>
 	<artifactId>s3-backup-service</artifactId>
-	<version>v0.0.3</version>
+	<version>v0.0.4</version>
 	<name>s3-backup-service</name>
 	<description>Servicio de copia de seguridad a s3 de aws</description>
 	<properties>
