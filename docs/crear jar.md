@@ -1,10 +1,10 @@
 
-## Version 0.0.1
+## Version 0.0.2
 ## Conf pom.xml
 - Archivo [pom.xml](../pom.xml)
 - Descomentar el <resources> que esta dentro del <build>
 
-- Cambiar a v0.0.1<version> en pom.xml, el que esta debajo de <artifactId>s3-backup-service</artifactId> 
+- Cambiar a v0.0.2<version> en pom.xml, el que esta debajo de <artifactId>s3-backup-service</artifactId> 
 - [pom.xml](../pom.xml)
 
 ## Crear jar
@@ -39,10 +39,10 @@
 
 
 Windows
-> git flow release start v0.0.1; git flow release finish -m 'v0.0.1-liberada' 'v0.0.1' ; git push origin --all ; git push origin --tags
+> git flow release start v0.0.2; git flow release finish -m 'v0.0.2-liberada' 'v0.0.2' ; git push origin --all ; git push origin --tags
 
 Mac
-> git flow release start v0.0.1 && git flow release finish -m 'v0.0.1-liberada' 'v0.0.1' && git push origin --all && git push origin --tags
+> git flow release start v0.0.2 && git flow release finish -m 'v0.0.2-liberada' 'v0.0.2' && git push origin --all && git push origin --tags
 
 - Checkout a develop
 > git checkout develop
