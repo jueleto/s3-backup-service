@@ -215,28 +215,29 @@ public class ProcesadorArchivoService {
             if (file.isFile()) {
                 // subir directamente
                 System.out.println("");
-
-
+                
                 String fileZipString = (file.getAbsolutePath()+".zip").substring(1);
+                System.out.println("- File: "+file.getAbsolutePath());
+                System.out.println("  zip objectKey: "+fileZipString);
                 boolean existeArchivo = bucketOperation.checkIfObjectExists(fileZipString);
-                System.out.println("- existeArchivo: " + fileZipString+": "+existeArchivo);
+                System.out.println("  existe en s3: " +(existeArchivo ? "Si" : "No") +", reemplazar: " + definicion.isReemplazar());
+                
                 File fileComprimido = null;
-
                 if(definicion.isReemplazar() || !existeArchivo){
                     // comprime el archivo y lo sube
-                    System.out.println("- zipfile file: " + file);
+                    System.out.println("  zipfile file: " + file);
                     fileComprimido = zipFile.compressFile(file);
                 }
 
                 if(!definicion.isReemplazar() && existeArchivo){
-                    System.out.println("  Omitido antes zip: " + fileZipString);
+                    System.out.println("  Omitido: existe objectKey y no se reemplaza");
                 }
 
                 if(fileComprimido != null){
                   subirArchivoZipAws(definicion.getDestinoForzado(),definicion.getDestinoBase(), definicion.isReemplazar(),
                             definicion.getDirectorio(), fileComprimido);
                     // eliminar archivo del tmp
-                    System.out.println("- Eliminando archivo tmp: " + fileComprimido.getAbsolutePath() +" result: "+fileComprimido.delete());
+                    System.out.println("  Eliminando archivo tmp: " + fileComprimido.getAbsolutePath() +" result: "+fileComprimido.delete());
                 } 
             }
 
@@ -331,40 +332,31 @@ public class ProcesadorArchivoService {
                             // Procesa cada archivo encontrado
                             System.out.println("");
 
-                            
-                            System.out.println("- zipfile filePath: " + filePath);
-
                             File file = new File(filePath.toString());
 
                             String fileZipString = (file.getAbsolutePath()+".zip").substring(1);
+                            System.out.println("- File: "+file.getAbsolutePath());
+                            System.out.println("  zip objectKey: "+fileZipString);
                             boolean existeArchivo = bucketOperation.checkIfObjectExists(fileZipString);
-                            System.out.println("- existeArchivo: " + fileZipString+": "+existeArchivo);
-
+                            System.out.println("  existe en s3: " +(existeArchivo ? "Si" : "No") +", reemplazar: " + definicion.isReemplazar());
+                            
                             File fileComprimido = null;
-
-                            //ignorar algunos archivos
-                            if(file.getName().equalsIgnoreCase(".DS_Store")){
-                                System.out.println("  IGNORAR file: " + filePath);
-                                return FileVisitResult.CONTINUE;
-                            }
-
                             if(definicion.isReemplazar() || !existeArchivo){
                                 // comprime el archivo y lo sube
-                                System.out.println("- zipfile file: " + file);
+                                System.out.println("  zipfile file: " + file);
                                 fileComprimido = zipFile.compressFile(file);
                             }
 
                             if(!definicion.isReemplazar() && existeArchivo){
-                                System.out.println("  Omitido antes zip: " + fileZipString);
+                                System.out.println("  Omitido: existe objectKey y no se reemplaza");
                             }
 
                             if(fileComprimido != null){
                                 subirArchivoZipAws(definicion.getDestinoForzado(), definicion.getDestinoBase(), definicion.isReemplazar(),
-                                filePath.toString(), fileComprimido);
+                                    filePath.toString(), fileComprimido);
                                 // eliminar archivo del tmp
-                                System.out.println("- Eliminando archivo tmp: " + fileComprimido.getAbsolutePath() +" result: "+fileComprimido.delete());
+                                System.out.println("  Eliminando archivo tmp: " + fileComprimido.getAbsolutePath() +" result: "+fileComprimido.delete());
                             } 
-                            
 
                             return FileVisitResult.CONTINUE;
                         }
