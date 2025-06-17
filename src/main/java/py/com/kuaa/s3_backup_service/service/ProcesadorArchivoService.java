@@ -328,9 +328,15 @@ public class ProcesadorArchivoService {
                         public FileVisitResult visitFile(Path filePath, BasicFileAttributes attrs) throws IOException {
                             // Procesa cada archivo encontrado
                             System.out.println("");
+
+                            
                             System.out.println("- zipfile file: " + filePath);
 
                             File file = new File(filePath.toString());
+
+                            String fileZipString = file.getAbsolutePath()+".zip";
+                            boolean existeArchivo = bucketOperation.checkIfObjectExists(fileZipString);
+                            File fileComprimido = null;
 
                             //ignorar algunos archivos
                             if(file.getName().equalsIgnoreCase(".DS_Store")){
@@ -338,12 +344,22 @@ public class ProcesadorArchivoService {
                                 return FileVisitResult.CONTINUE;
                             }
 
-                            // Aquí puedes agregar código para leer y procesar el archivo si es necesario
-                            File fileComprimido = zipFile.compressFile(file);
-                            subirArchivoZipAws(definicion.getDestinoForzado(), definicion.getDestinoBase(), definicion.isReemplazar(),
-                            filePath.toString(), fileComprimido);
+                            if(definicion.isReemplazar() || !existeArchivo){
+                                // comprime el archivo y lo sube
+                                System.out.println("- zipfile file: " + file);
+                                fileComprimido = zipFile.compressFile(file);
+                            }
 
-                            System.out.println("- Eliminando archivo tmp: " + fileComprimido.getAbsolutePath() +" result: "+fileComprimido.delete());
+                            if(!definicion.isReemplazar() && existeArchivo){
+                                System.out.println("  Omitido antes zip: " + fileZipString);
+                            }
+
+                            if(fileComprimido != null){
+                                subirArchivoZipAws(definicion.getDestinoForzado(), definicion.getDestinoBase(), definicion.isReemplazar(),
+                                filePath.toString(), fileComprimido);
+                                // eliminar archivo del tmp
+                                System.out.println("- Eliminando archivo tmp: " + fileComprimido.getAbsolutePath() +" result: "+fileComprimido.delete());
+                            } 
                             
 
                             return FileVisitResult.CONTINUE;
