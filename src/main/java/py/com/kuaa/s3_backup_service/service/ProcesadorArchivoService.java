@@ -216,8 +216,10 @@ public class ProcesadorArchivoService {
                 // subir directamente
                 System.out.println("");
 
-                String fileZipString = file.getAbsolutePath()+".zip";
+
+                String fileZipString = (file.getAbsolutePath()+".zip").substring(1);
                 boolean existeArchivo = bucketOperation.checkIfObjectExists(fileZipString);
+                System.out.println("- existeArchivo: " + fileZipString+": "+existeArchivo);
                 File fileComprimido = null;
 
                 if(definicion.isReemplazar() || !existeArchivo){
@@ -330,12 +332,14 @@ public class ProcesadorArchivoService {
                             System.out.println("");
 
                             
-                            System.out.println("- zipfile file: " + filePath);
+                            System.out.println("- zipfile filePath: " + filePath);
 
                             File file = new File(filePath.toString());
 
-                            String fileZipString = file.getAbsolutePath()+".zip";
+                            String fileZipString = (file.getAbsolutePath()+".zip").substring(1);
                             boolean existeArchivo = bucketOperation.checkIfObjectExists(fileZipString);
+                            System.out.println("- existeArchivo: " + fileZipString+": "+existeArchivo);
+
                             File fileComprimido = null;
 
                             //ignorar algunos archivos
