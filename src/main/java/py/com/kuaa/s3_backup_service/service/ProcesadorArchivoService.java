@@ -227,7 +227,7 @@ public class ProcesadorArchivoService {
                 }
 
                 if(!definicion.isReemplazar() && existeArchivo){
-                    System.out.println("  Omitido: " + fileZipString);
+                    System.out.println("  Omitido antes zip: " + fileZipString);
                 }
 
                 if(fileComprimido != null){
